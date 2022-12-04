@@ -16,15 +16,20 @@ const SYSCALL_YIELD: usize = 124;
 const SYSCALL_GET_TIME: usize = 169;
 const SYSCALL_TASK_INFO: usize = 410;
 
+use crate::task::plus_one_to_syscall_used;
+
 mod fs;
 mod process;
 
 use fs::*;
 use process::*;
+pub use process::TaskInfo;
 
 /// handle syscall exception with `syscall_id` and other arguments
 pub fn syscall(syscall_id: usize, args: [usize; 3]) -> isize {
     // LAB1: You may need to update syscall info here.
+    plus_one_to_syscall_used(syscall_id);
+
     match syscall_id {
         SYSCALL_WRITE => sys_write(args[0], args[1] as *const u8, args[2]),
         SYSCALL_EXIT => sys_exit(args[0] as i32),
